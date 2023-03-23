@@ -121,6 +121,8 @@ func Run() {
 		fmt.Fprintln(os.Stderr, err)
 		//return
 	}
+	has, _ := wshell.Exists("/")
+	fmt.Println("/ ", has)
 
 	c := cli.NewCli()
 	c.OnExit = func(){}
