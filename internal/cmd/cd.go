@@ -49,7 +49,7 @@ func cmdCdFunc(p string, wshell *gowfs.FsShell, c *cli.Cli) {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println("/ ", has)
+	fmt.Println(p, has)
 	if !has {
 		fmt.Printf("%s: %s: %s", cdName, p, pathNotFound)
 		return
