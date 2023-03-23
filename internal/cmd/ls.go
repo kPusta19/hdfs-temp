@@ -7,6 +7,7 @@ import (
 
 	"github.com/k1nky/cli/pkg/cli"
 	"github.com/k1nky/cli/pkg/command"
+	"github.com/mitchellh/colorstring"
 	"github.com/vladimirvivien/gowfs"
 )
 
@@ -116,7 +117,8 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 		dirsStr += keys[i] + ":\n\t"
 		for j := 0; j < len(dirs[keys[i]]); j++ {
 			if dirs[keys[i]][j].Type == "DIRECTORY" {
-				dirsStr += fmt.Sprint(colorDir, dirs[keys[i]][j].PathSuffix)
+				//dirsStr += fmt.Sprint(colorDir, dirs[keys[i]][j].PathSuffix)
+				dirsStr += colorstring.Color(fmt.Sprintf("[green]%s", dirs[keys[i]][j].PathSuffix))
 			} else {
 				dirsStr += fmt.Sprintf(dirs[keys[i]][j].PathSuffix)
 			}
@@ -169,7 +171,8 @@ func lsWithoutArgs(wshell *gowfs.FsShell, c *cli.Cli) {
 	filesStr := ""
 	for i := 0; i < len(files); i++ {
 		if files[i].Type == "DIRECTORY" {
-			filesStr += fmt.Sprint(colorDir, files[i].PathSuffix)
+			// filesStr += fmt.Sprint(colorDir, files[i].PathSuffix)
+			filesStr += colorstring.Color(fmt.Sprintf("[green]%s", files[i].PathSuffix))
 		} else {
 			filesStr += fmt.Sprint(files[i].PathSuffix)
 		}

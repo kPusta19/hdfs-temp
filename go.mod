@@ -11,6 +11,7 @@ require (
 	github.com/k1nky/cli v0.0.0-20220830053548-3792cddac626 // indirect
 	github.com/mattn/go-colorable v0.1.4 // indirect
 	github.com/mattn/go-isatty v0.0.11 // indirect
+	github.com/mitchellh/colorstring v0.0.0-20190213212951-d06e56a500db // indirect
 	github.com/pborman/getopt/v2 v2.1.0 // indirect
 	github.com/vladimirvivien/gowfs v0.1.0 // indirect
 	golang.org/x/sys v0.0.0-20191026070338-33540a1f6037 // indirect
