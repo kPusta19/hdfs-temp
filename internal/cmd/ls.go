@@ -70,6 +70,18 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	dirsSuffixes := map[string][]string{}
 
 	for _, p := range existsPaths {
+		fs, err := wshell.FileSystem.GetFileStatus(gowfs.Path{Name: p})
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		if fs.Type == "FILE" {
+			files = append(files, fs)
+			filesPaths = append(filesPaths, fs.PathSuffix)
+			continue
+		}
+
 		if _, has := dirs[p]; !has {
 			dirs[p] = []gowfs.FileStatus{}
 			dirsSuffixes[p] = []string{}
@@ -83,18 +95,18 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 		}
 
 		for _, cs := range css {
-			if cs.Type == "DIRECTORY" {
+			if cs.Type == "DIRECTORY" || cs.Type == "FILE" {
 				dirs[p] = append(dirs[p], cs)
 				dirsSuffixes[p] = append(dirsSuffixes[p], cs.PathSuffix)
 				sort.Slice(dirs[p], func(i, j int) bool {
 					return dirs[p][i].PathSuffix < dirs[p][j].PathSuffix
 				})
 			}
-			if cs.Type == "FILE" {
-				fmt.Printf("FILE: %s", cs.PathSuffix)
-				files = append(files, cs)
-				filesPaths = append(filesPaths, cs.PathSuffix)
-			}
+			// if  {
+			// 	fmt.Printf("FILE: %s", cs.PathSuffix)
+			// 	files = append(files, cs)
+			// 	filesPaths = append(filesPaths, cs.PathSuffix)
+			// }
 		}
 
 	}
