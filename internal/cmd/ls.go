@@ -83,16 +83,15 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 		}
 
 		for _, cs := range css {
-			if cs.Type == "FILE" {
-				files = append(files, cs)
-				filesPaths = append(filesPaths, p)
-			}
 			if cs.Type == "DIRECTORY" {
 				dirs[p] = append(dirs[p], cs)
 				dirsSuffixes[p] = append(dirsSuffixes[p], cs.PathSuffix)
 				sort.Slice(dirs[p], func(i, j int) bool {
 					return dirs[p][i].PathSuffix < dirs[p][j].PathSuffix
 				})
+			} else /* if cs.Type == "FILE" */ {
+				files = append(files, cs)
+				filesPaths = append(filesPaths, p)
 			}
 		}
 
