@@ -3,8 +3,8 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/AlexsJones/cli/cli"
-	"github.com/AlexsJones/cli/command"
+	"github.com/k1nky/cli/pkg/cli"
+	"github.com/k1nky/cli/pkg/command"
 	"github.com/vladimirvivien/gowfs"
 )
 
