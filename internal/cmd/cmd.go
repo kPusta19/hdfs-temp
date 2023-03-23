@@ -24,8 +24,8 @@ Valid COMMANDS:
 	cd [DIR]
 	lls [lah] [FILE]...
 	lcd [DIR]
-	help
-	?
+	?/help
+	q/exit
 `, os.Args[0])
 
 
@@ -68,7 +68,6 @@ func Run() {
 		Addr: fmt.Sprintf("%s:%d", flagAddr, flagPort),
 		User: flagUser,
 	})
-
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return
@@ -77,10 +76,18 @@ func Run() {
 	wshell := gowfs.FsShell{
 		FileSystem: wfs,
 	}
+	if _, err := wshell.Exists("/"); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		//return
+	}
 
 	c := cli.NewCli()
 	c.AddCommand(*cmdHelp(&wshell, c))
 
 
+	c.ReadlineConfig.FuncExitRaw = func() error {
+		fmt.Println("SA")
+		return nil
+	}
 	c.Run()
 }
