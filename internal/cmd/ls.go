@@ -78,7 +78,8 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 
 		if fs.Type == "FILE" {
 			files = append(files, fs)
-			filesPaths = append(filesPaths, fs.PathSuffix)
+			fmt.Printf("FILE: %s", p)
+			filesPaths = append(filesPaths, p)
 			continue
 		}
 
@@ -114,6 +115,7 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	filesStr := ""
 	for i := 0; i < len(filesPaths); i++ {
 		filesStr += filesPaths[i]
+		fmt.Printf("FILE: %s", filesPaths[i])
 		if i < len(filesPaths)-1 {
 			filesStr += " "
 		}
