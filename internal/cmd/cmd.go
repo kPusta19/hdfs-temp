@@ -85,9 +85,6 @@ func Run() {
 	c.AddCommand(*cmdHelp(&wshell, c))
 
 
-	c.ReadlineConfig.FuncExitRaw = func() error {
-		fmt.Println("SA")
-		return nil
-	}
+	
 	c.Run()
 }
