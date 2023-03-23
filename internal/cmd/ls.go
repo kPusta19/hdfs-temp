@@ -40,6 +40,7 @@ func cmdLsFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 		return
 	}
 
+	lsWithoutArgs(wshell, c)
 }
 
 func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
