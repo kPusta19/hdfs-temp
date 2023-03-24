@@ -28,13 +28,13 @@ func cmdCd(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 		Func: func(args []string) {
 			if len(args) == 0 {
 				cmdCdFuncWithout(wshell)
-				c.Scanner.Config.Prompt = updatePromt(wshell, c)
+				updatePromt(wshell, c)
 				return
 			}
 
 			if len(args) == 1 {
 				cmdCdFunc(args[0], wshell)
-				c.Scanner.Config.Prompt = updatePromt(wshell, c)
+				updatePromt(wshell, c)
 				return
 			}
 
@@ -86,11 +86,14 @@ func cmdCdFuncWithout(wshell *gowfs.FsShell) {
 	wshell.WorkingPath = home
 }
 
-func updatePromt(wshell *gowfs.FsShell, c *cli.Cli) string {
-	if wshell.FileSystem == nil {
-		return colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[-@-] > ", workingLocalDir, localUser))
-	}
+func updatePromt(wshell *gowfs.FsShell, c *cli.Cli) {
+	paint := colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[%s@%s]", workingLocalDir, localUser, wshell.WorkingPath, wshell.FileSystem.Config.User))  + " > "
 	
-	return colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[%s@%s] > ", workingLocalDir, localUser, wshell.WorkingPath, wshell.FileSystem.Config.User))
+	if wshell.FileSystem == nil {
+		paint = colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[-@-]", workingLocalDir, localUser)) + " > "
+	}
+
+	c.Scanner.Config.Prompt = paint
+	c.Scanner.Operation.SetPrompt(paint)
 	
 }

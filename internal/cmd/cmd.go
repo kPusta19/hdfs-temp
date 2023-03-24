@@ -19,8 +19,8 @@ Version: v%s
 
 Valid COMMANDS:
 	mkdir [-p] DIR...
-	put SOURCE DEST
-	get SOURCE [DEST]
+	put SOURCE... DEST
+	get SOURCE... [DEST]
 	append SOURCE DEST
 	delete/rm [-rf] FILE...
 	ls [-lah] [FILE]...
@@ -103,7 +103,7 @@ func Run() {
 
 	c := cli.NewCli()
 	c.OnExit = func(){}
-	c.Scanner.Config.Prompt = updatePromt(wshell, c)
+	updatePromt(wshell, c)
 
 	c.AddCommand(*cmdMkdir(wshell, c))
 	c.AddCommand(*cmdCd(wshell, c))
