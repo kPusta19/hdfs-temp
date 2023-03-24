@@ -67,30 +67,6 @@ func getCmdByName(c *cli.Cli, name string) *command.Command {
 	}
 	return nil
 }
-// func Init() error {
-// 	if err := flags(); err != nil {
-// 		fmt.Fprintln(os.Stderr, err.Error())
-// 		flag.Usage()
-// 		return fmt
-// 	}
-
-// 	wfs, err := gowfs.NewFileSystem(gowfs.Configuration{
-// 		Addr: fmt.Sprintf("%s:%d", flagAddr, flagPort),
-// 		User: flagUser,
-// 	})
-// 	if err != nil {
-// 		fmt.Fprintln(os.Stderr, err)
-// 		return
-// 	}
-
-// 	wshell := gowfs.FsShell{
-// 		FileSystem: wfs,
-// 	}
-// 	if _, err := wshell.Exists("/"); err != nil {
-// 		fmt.Fprintln(os.Stderr, err)
-// 		//return
-// 	}
-// }
 
 func Run() {
 	if err := flags(); err != nil {
@@ -107,11 +83,6 @@ func Run() {
 		fmt.Fprintln(os.Stderr, err)
 		return
 	}
-	// home, err := wfs.GetHomeDirectory()
-	// if err != nil {
-	// 	fmt.Fprintln(os.Stderr, err)
-	// 	return
-	// }
 
 	wshell := gowfs.FsShell{
 		FileSystem: wfs,
@@ -121,8 +92,6 @@ func Run() {
 		fmt.Fprintln(os.Stderr, err)
 		//return
 	}
-	has, _ := wshell.Exists("/")
-	fmt.Println("/ ", has)
 
 	c := cli.NewCli()
 	c.OnExit = func(){}
