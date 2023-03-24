@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"path"
 	"strings"
 
@@ -17,7 +18,8 @@ const (
 var (
 	putHelp = fmt.Sprintf(`Puts local SOURCE file to remote DEST location`)
 
-	putNotAFile = fmt.Sprintf(`Not a file`)
+	errNotAFile = fmt.Sprintf(`Not a file`)
+	errNotADir = fmt.Sprintf(`Not a directory`)
 
 	overwrite = true
 )
@@ -39,7 +41,7 @@ func cmdPut(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 
 func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 	remotePath := ps[len(ps)-1]
-	localPathes := ps[:len(ps)-2]
+	localPathes := ps[:len(ps)-1]
 
 	remotePath = path.Clean(remotePath)
 	if !path.IsAbs(remotePath) {
@@ -53,6 +55,16 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 	}
 	if !has {
 		fmt.Printf("%s: %s: %s [DEST]", putName, remotePath, pathNotFound)
+		return
+	}
+
+	rFile, err := wshell.FileSystem.GetFileStatus(gowfs.Path{Name: remotePath})
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+	if rFile.Type != "DIRECTORY" {
+		fmt.Printf("%s: %s: %s [DEST]", putName, remotePath, errNotADir)
 		return
 	}
 
@@ -78,8 +90,19 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 	}
 
 	for i, p := range existsLocalPathes {
+		lFile, err := os.Stat(p)
+		if err != nil {
+			fmt.Print(err)
+			continue
+		}
+		if lFile.IsDir() {
+			fmt.Printf("%s: %s: %s", putName, p, errNotAFile)
+			continue
+		}
+		
+
 		fmt.Println("SOURCE - ", p)
-		_, err := wshell.Put(p, remotePath, overwrite)
+		_, err = wshell.Put(p, remotePath, overwrite)
 		if err != nil {
 			fmt.Print(err)
 		} else {
