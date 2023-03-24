@@ -110,7 +110,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 		}
 
 		fmt.Printf("%s + %v\n", localPath, rFile)
-		lFilePath := path.Join(localPath, rFile.PathSuffix)
+		lFilePath := path.Join(localPath, path.Base(p))
 		_, err = wshell.Get(p, lFilePath)
 		if err != nil {
 			fmt.Printf("%s -> %s get %s", p, lFilePath, err.Error())
