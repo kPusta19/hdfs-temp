@@ -72,7 +72,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 			continue
 		}
 		if !has {
-			fmt.Printf("%s: %s: %s [SOURCE]", putName, p, pathNotFound)
+			fmt.Printf("%s: %s: %s [SOURCE]", getName, p, pathNotFound)
 			continue
 		}
 
@@ -90,7 +90,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 		if err != nil && !strings.Contains(err.Error(), "java.io.FileNotFoundException") {
 			fmt.Print(err)
 		} else if !has {
-			fmt.Printf("%s: %s: %s [SOURCE]", putName, p, pathNotFound)
+			fmt.Printf("%s: %s: %s [SOURCE]", getName, p, pathNotFound)
 		} else {
 			existsRemotePathes = append(existsRemotePathes, p)
 		}
@@ -105,7 +105,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 			continue
 		}
 		if rFile.Type == "DIRECTORY" {
-			fmt.Printf("%s: %s: %s", putName, p, errNotAFile)
+			fmt.Printf("%s: %s: %s", getName, p, errNotAFile)
 			continue
 		}
 
