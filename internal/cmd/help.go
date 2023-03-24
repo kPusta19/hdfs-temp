@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	helpChar = "?"
 	helpName = "help"
+	helpShort = "?"
 )
 
 var (
@@ -18,6 +18,16 @@ var (
 )
 
 func cmdHelp(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
+	return &command.Command{
+		Name: "help",
+		Help: helpUsage,
+		Func: func(args []string) {
+			cmdHelpFunc(wshell, c)
+		},
+	}
+}
+
+func cmdHelpShort(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 	return &command.Command{
 		Name: "?",
 		Help: helpUsage,

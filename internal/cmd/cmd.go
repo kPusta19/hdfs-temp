@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"os/user"
+	"path"
 
 	"github.com/k1nky/cli/pkg/cli"
 	"github.com/k1nky/cli/pkg/command"
@@ -12,7 +14,7 @@ import (
 
 var (
 	version = "0.0.1"
-	helpMsg   = fmt.Sprintf(`hdfs-temp is a ...
+	helpMsg   = fmt.Sprintf(`%s is a ...
 Version: v%s
 
 Valid COMMANDS:
@@ -27,16 +29,14 @@ Valid COMMANDS:
 	lcd [DIR]
 	?/help
 	q/exit
-`, os.Args[0])
+`, os.Args[0], version)
 
 
 	flagAddr string
 	flagPort int64
 	flagUser string
-	
-	baseDir string = "/user"
-	fs gowfs.FileSystem
-	shell gowfs.FsShell
+
+	baseRemoteDir string = "/"
 )
 
 func flags() error {
@@ -75,6 +75,14 @@ func Run() {
 		return
 	}
 
+	workingLocalDir = path.Dir(os.Args[0])
+	lu, err := user.Current()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		localUser = lu.Username
+	}
+
 	wfs, err := gowfs.NewFileSystem(gowfs.Configuration{
 		Addr: fmt.Sprintf("%s:%d", flagAddr, flagPort),
 		User: flagUser,
@@ -84,22 +92,29 @@ func Run() {
 		return
 	}
 
-	wshell := gowfs.FsShell{
+	wshell := &gowfs.FsShell{
 		FileSystem: wfs,
-		WorkingPath: "/",
+		WorkingPath: baseRemoteDir,
 	}
-	if _, err := wshell.Exists("/"); err != nil {
+	if _, err := wshell.Exists(baseRemoteDir); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		//return
 	}
 
 	c := cli.NewCli()
 	c.OnExit = func(){}
+	c.Scanner.Config.Prompt = updatePromt(wshell, c)
 
-	c.AddCommand(*cmdHelp(&wshell, c))
-	c.AddCommand(*cmdQ(c))
-	c.AddCommand(*cmdCd(&wshell, c))
-	c.AddCommand(*cmdLs(&wshell, c))
+	c.AddCommand(*cmdMkdir(wshell, c))
+	c.AddCommand(*cmdCd(wshell, c))
+	c.AddCommand(*cmdLcd(wshell, c))
+	c.AddCommand(*cmdLs(wshell, c))
+	c.AddCommand(*cmdLls(wshell, c))
+	c.AddCommand(*cmdDelete(wshell, c))
+	c.AddCommand(*cmdHelp(wshell, c))
+	c.AddCommand(*cmdHelpShort(wshell, c))
+	c.AddCommand(*cmdExit(c))
+	c.AddCommand(*cmdExitShort(c))
 	
 	c.Run()
 }

@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"io/fs"
 	"path"
 	"strings"
 
@@ -12,32 +11,33 @@ import (
 )
 
 const (
-	mkdirName = "mkdir"
+	deleteName = "delete"
+	deleteShort = "rm"
+
 )
 
 var (
-	mkdirHelp = fmt.Sprintf(`Creates directory`)
+	deleteHelp string = fmt.Sprintf(`Deletes files or directories`)
 
-	mkdirExists = fmt.Sprintf(`Directory already exists`)
-	defaultFileMode int = 0766
+	recursive bool = false
 )
 
-func cmdMkdir(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
+func cmdDelete(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 	return &command.Command{
-		Name: mkdirName,
-		Help: mkdirHelp,
+		Name: deleteName,
+		Help: deleteHelp,
 		Func: func(args []string) {
 			if len(args) == 0 {
 				if cmd := getCmdByName(c, helpName); cmd != nil {
 					cmd.Func(args)
 				}
 			}
-			cmdMkdirFunc(args, wshell, c)
+			cmdDeleteFunc(args, wshell, c)
 		},
 	}
 }
 
-func cmdMkdirFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
+func cmdDeleteFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	neededPathes := []string{}
 	for _, p := range ps {
 		p = path.Clean(p)
@@ -50,8 +50,8 @@ func cmdMkdirFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 			fmt.Println(err)
 			continue
 		}
-		if has {
-			fmt.Printf("%s: %s: %s", mkdirName, p, mkdirExists)
+		if !has {
+			fmt.Printf("%s: %s: %s", mkdirName, p, pathNotFound)
 			continue
 		}
 
@@ -59,7 +59,7 @@ func cmdMkdirFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	}
 
 	for _, p := range neededPathes {
-		_, err := wshell.FileSystem.MkDirs(gowfs.Path{Name: p}, fs.FileMode(defaultFileMode))
+		_, err := wshell.FileSystem.Delete(gowfs.Path{Name: p}, recursive)
 		if err != nil {
 			fmt.Println(err)
 			continue

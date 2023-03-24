@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
+	"io/fs"
+	"os"
 	"path"
 	"sort"
-	"strings"
 
 	"github.com/k1nky/cli/pkg/cli"
 	"github.com/k1nky/cli/pkg/command"
@@ -13,33 +14,34 @@ import (
 )
 
 const (
-	lsName = "ls"
+	llsName = "lls"
+	spaces = "   "
 )
 
 var (
-	lsUsage string = fmt.Sprint(`List status of the pointed files or directories`)
+	llsUsage string = fmt.Sprint(`List status of the pointed local files or directories`)
 )
 
-func cmdLs(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
+func cmdLls(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 	return &command.Command{
-		Name: lsName,
-		Help: lsUsage,
+		Name: llsName,
+		Help: llsUsage,
 		Func: func(args []string) {
-			cmdLsFunc(args, wshell, c)
+			cmdLlsFunc(args, wshell, c)
 		},
 	}
 }
 
-func cmdLsFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
+func cmdLlsFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	if len(ps) > 0 {
-		lsWithArgs(ps, wshell, c)
+		llsWithArgs(ps, wshell, c)
 		return
 	}
 
-	lsWithoutArgs(wshell, c)
+	llsWithoutArgs(wshell, c)
 }
 
-func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
+func llsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	existsPaths := []string{}
 	for _, p := range ps {
 		p = path.Clean(p)
@@ -47,58 +49,60 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 			p = path.Join(wshell.WorkingPath, p)
 		}
 
-		has, err := wshell.Exists(p)
-		if err != nil && !strings.Contains(err.Error(), "java.io.FileNotFoundException") {
+		has, err := localPathExists(p)
+		if !has && err != nil {
 			fmt.Println(err)
-			return
+			continue
 		}
 		if !has {
-			fmt.Printf("%s: cannot access %s: %s", lsName, p, pathNotFound)
+			fmt.Printf("%s: cannot access %s: %s", llsName, p, pathNotFound)
+			continue
 		}
 
 		existsPaths = append(existsPaths, p)
 	}
 
-	files := []gowfs.FileStatus{}
+	files := []fs.FileInfo{}
 	filesPaths := []string{}
-	dirs := map[string][]gowfs.FileStatus{}
+	dirs := map[string][]os.DirEntry{}
 	dirsSuffixes := map[string][]string{}
 
 	for _, p := range existsPaths {
-		fs, err := wshell.FileSystem.GetFileStatus(gowfs.Path{Name: p})
+		fileStat, err := os.Stat(p)
 		if err != nil {
 			fmt.Println(err)
 			continue
 		}
 
-		if fs.Type == "FILE" {
-			files = append(files, fs)
+		if !fileStat.IsDir() {
+			files = append(files, fileStat)
 			filesPaths = append(filesPaths, p)
 			continue
 		}
 
 		if _, has := dirs[p]; !has {
-			dirs[p] = []gowfs.FileStatus{}
+			dirs[p] = []os.DirEntry{}
 			dirsSuffixes[p] = []string{}
 		}
 
-		css, err := wshell.FileSystem.ListStatus(gowfs.Path{
-			Name: p,
-		})
+		// css, err := wshell.FileSystem.ListStatus(gowfs.Path{
+		// 	Name: p,
+		// })
+		css, err := os.ReadDir(p)
 		if err != nil {
 			fmt.Println(err)
 		}
 
 		for _, cs := range css {
 			dirs[p] = append(dirs[p], cs)
-			dirsSuffixes[p] = append(dirsSuffixes[p], cs.PathSuffix)
+			dirsSuffixes[p] = append(dirsSuffixes[p], cs.Name())
 			sort.Slice(dirs[p], func(i, j int) bool {
-				return dirs[p][i].PathSuffix < dirs[p][j].PathSuffix
+				return dirs[p][i].Name() < dirs[p][j].Name()
 			})
 		}
 
 	}
-	// Sorting files and get ready files string for output 
+	// Sorting files and get ready files string for output
 	sort.Strings(filesPaths)
 	filesStr := ""
 	for i := 0; i < len(filesPaths); i++ {
@@ -119,10 +123,10 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	for i := 0; i < len(keys); i++ {
 		dirsStr += keys[i] + ":\n\t"
 		for j := 0; j < len(dirs[keys[i]]); j++ {
-			if dirs[keys[i]][j].Type == "DIRECTORY" {
-				dirsStr += colorstring.Color(fmt.Sprintf("[green]%s", dirs[keys[i]][j].PathSuffix))
+			if dirs[keys[i]][j].IsDir() {
+				dirsStr += colorstring.Color(fmt.Sprintf("[green]%s", dirs[keys[i]][j].Name()))
 			} else {
-				dirsStr += fmt.Sprintf(dirs[keys[i]][j].PathSuffix)
+				dirsStr += fmt.Sprintf(dirs[keys[i]][j].Name())
 			}
 
 			if j < len(dirs[keys[i]])-1 {
@@ -144,41 +148,51 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	}
 }
 
-func lsWithoutArgs(wshell *gowfs.FsShell, c *cli.Cli) {
-	files := []gowfs.FileStatus{}
+func llsWithoutArgs(wshell *gowfs.FsShell, c *cli.Cli) {
+	files := []fs.DirEntry{}
 	filesPaths := []string{}
 
-	css, err := wshell.FileSystem.ListStatus(gowfs.Path{
-		Name: wshell.WorkingPath,
-	})
+	css, err := os.ReadDir(workingLocalDir)
 	if err != nil {
-		fmt.Print(err)
+		fmt.Println(err)
 	}
 	for _, cs := range css {
-		if cs.Type == "FILE" {
+		if !cs.IsDir() {
 			files = append(files, cs)
-			filesPaths = append(filesPaths, cs.PathSuffix)
+			filesPaths = append(filesPaths, cs.Name())
 		}
-		if cs.Type == "DIRECTORY" {
+		if cs.IsDir() {
 			files = append(files, cs)
-			filesPaths = append(filesPaths, cs.PathSuffix)
+			filesPaths = append(filesPaths, cs.Name())
 		}
 	}
 
 	sort.Slice(files, func(i, j int) bool {
-		return files[i].PathSuffix < files[j].PathSuffix
+		return files[i].Name() < files[j].Name()
 	})
 	sort.Strings(filesPaths)
 	filesStr := ""
 	for i := 0; i < len(files); i++ {
-		if files[i].Type == "DIRECTORY" {
-			filesStr += colorstring.Color(fmt.Sprintf("[green]%s", files[i].PathSuffix))
+		if files[i].IsDir() {
+			filesStr += colorstring.Color(fmt.Sprintf("[green]%s", files[i].Name()))
 		} else {
-			filesStr += fmt.Sprint(files[i].PathSuffix)
+			filesStr += fmt.Sprint(files[i].Name())
 		}
 		if i < len(filesPaths)-1 {
 			filesStr += spaces
 		}
 	}
+
 	fmt.Printf("%s", filesStr)
+}
+
+func localPathExists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
