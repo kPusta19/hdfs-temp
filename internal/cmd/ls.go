@@ -54,6 +54,7 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 		}
 		if !has {
 			fmt.Printf("%s: cannot access %s: %s", lsName, p, pathNotFound)
+			return
 		}
 
 		existsPaths = append(existsPaths, p)
