@@ -58,6 +58,7 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 
 	existsLocalPathes := []string{}
 	for _, p := range localPathes {
+		fmt.Println("SOURCE - ", p)
 		p = path.Clean(p)
 		if !path.IsAbs(p) {
 			p = path.Join(workingLocalDir, p)
