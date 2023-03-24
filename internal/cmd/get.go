@@ -23,8 +23,8 @@ var (
 
 func cmdGet(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 	return &command.Command{
-		Name: putName,
-		Help: putHelp,
+		Name: getName,
+		Help: getHelp,
 		Func: func(args []string) {
 			if len(args) < 1 {
 				if cmd := getCmdByName(c, helpName); cmd != nil {
