@@ -142,7 +142,11 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 
 	}
 
-	fmt.Printf("%s\n\n%s", filesStr, dirsStr)
+	if len(keys) == 0 {
+		fmt.Printf("%s", filesStr)
+	} else {
+		fmt.Printf("%s\n\n%s", filesStr, dirsStr)
+	}
 }
 
 func lsWithoutArgs(wshell *gowfs.FsShell, c *cli.Cli) {
