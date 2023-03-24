@@ -47,7 +47,7 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 	}
 
 	has, err := wshell.Exists(remotePath)
-	if err != nil && strings.Contains(err.Error(), "java.io.FileNotFoundException") {
+	if err != nil && !strings.Contains(err.Error(), "java.io.FileNotFoundException") {
 		fmt.Print(err)
 		return
 	}
