@@ -37,6 +37,21 @@ func cmdDelete(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 	}
 }
 
+func cmdDeleteShort(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
+	return &command.Command{
+		Name: deleteShort,
+		Help: deleteHelp,
+		Func: func(args []string) {
+			if len(args) == 0 {
+				if cmd := getCmdByName(c, helpName); cmd != nil {
+					cmd.Func(args)
+				}
+			}
+			cmdDeleteFunc(args, wshell, c)
+		},
+	}
+}
+
 func cmdDeleteFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 	neededPathes := []string{}
 	for _, p := range ps {

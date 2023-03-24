@@ -22,7 +22,7 @@ Valid COMMANDS:
 	put SOURCE DEST
 	get SOURCE [DEST]
 	append SOURCE DEST
-	delete [-rf] FILE...
+	delete/rm [-rf] FILE...
 	ls [-lah] [FILE]...
 	cd [DIR]
 	lls [lah] [FILE]...
@@ -111,6 +111,7 @@ func Run() {
 	c.AddCommand(*cmdLs(wshell, c))
 	c.AddCommand(*cmdLls(wshell, c))
 	c.AddCommand(*cmdDelete(wshell, c))
+	c.AddCommand(*cmdDeleteShort(wshell, c))
 	c.AddCommand(*cmdHelp(wshell, c))
 	c.AddCommand(*cmdHelpShort(wshell, c))
 	c.AddCommand(*cmdExit(c))
