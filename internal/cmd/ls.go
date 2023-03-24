@@ -19,12 +19,6 @@ var (
 	lsUsage string = fmt.Sprint(`List status of the pointed files or directories`)
 )
 
-type Files []gowfs.FileStatus
-
-func (a Files) Len() int           { return len(a) }
-func (a Files) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a Files) Less(i, j int) bool { return a[i].PathSuffix < a[j].PathSuffix }
-
 func cmdLs(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 	return &command.Command{
 		Name: lsName,
@@ -58,7 +52,7 @@ func lsWithArgs(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 			return
 		}
 		if !has {
-			fmt.Printf("%s: cannot access %s: %s", lsName, p, pathNotFound)
+			fmt.Printf("%s: cannot access %s: %s\n", lsName, p, pathNotFound)
 		}
 
 		existsPaths = append(existsPaths, p)
