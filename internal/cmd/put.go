@@ -16,12 +16,12 @@ const (
 )
 
 var (
-	putHelp = fmt.Sprintf(`Puts local SOURCE file to remote DEST location`)
+	putHelp = fmt.Sprintf(`Puts local SOURCE files to remote DEST directory`)
 
 	errNotAFile = fmt.Sprintf(`Not a file`)
 	errNotADir = fmt.Sprintf(`Not a directory`)
 
-	overwrite = true
+	putOverwrite = true
 )
 
 func cmdPut(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
@@ -70,7 +70,6 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 
 	existsLocalPathes := []string{}
 	for _, p := range localPathes {
-		fmt.Println("SOURCE - ", p)
 		p = path.Clean(p)
 		if !path.IsAbs(p) {
 			p = path.Join(workingLocalDir, p)
@@ -101,8 +100,7 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 		}
 		
 
-		fmt.Println("SOURCE - ", p)
-		_, err = wshell.Put(p, remotePath, overwrite)
+		_, err = wshell.Put(p, remotePath, putOverwrite)
 		if err != nil {
 			fmt.Print(err)
 		} else {
