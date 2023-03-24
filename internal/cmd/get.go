@@ -51,7 +51,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 	if lHas {
 		lFile, err := os.Stat(localPathLocal)
 		if err != nil {
-			fmt.Print("stat" + err.Error())
+			fmt.Print(err)
 			return
 		}
 		if lFile.IsDir() {
@@ -112,7 +112,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 		lFilePath := path.Join(localPath, rFile.PathSuffix)
 		_, err = wshell.Get(p, lFilePath)
 		if err != nil {
-			fmt.Print(err)
+			fmt.Print("get" + err.Error())
 		} else {
 			fmt.Printf("%s has been downloaded to %s", p, lFilePath)
 		}
