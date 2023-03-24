@@ -108,6 +108,7 @@ func Run() {
 	c.AddCommand(*cmdMkdir(wshell, c))
 	c.AddCommand(*cmdPut(wshell, c))
 	c.AddCommand(*cmdGet(wshell, c))
+	c.AddCommand(*cmdAppend(wshell, c))
 	c.AddCommand(*cmdCd(wshell, c))
 	c.AddCommand(*cmdLcd(wshell, c))
 	c.AddCommand(*cmdLs(wshell, c))
