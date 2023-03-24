@@ -66,7 +66,7 @@ func cmdDeleteFunc(ps []string, wshell *gowfs.FsShell, c *cli.Cli) {
 			continue
 		}
 		if !has {
-			fmt.Printf("%s: %s: %s", mkdirName, p, pathNotFound)
+			fmt.Printf("%s/%s: %s: %s", deleteName, deleteShort, p, pathNotFound)
 			continue
 		}
 
