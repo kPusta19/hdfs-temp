@@ -61,7 +61,7 @@ func cmdLcdFunc(p string, wshell *gowfs.FsShell) {
 
 	has, err := localPathExists(p)
 	if err != nil && !has {
-		fmt.Println(err)
+		fmt.Print(err)
 		return
 	}
 	if !has {
@@ -70,6 +70,7 @@ func cmdLcdFunc(p string, wshell *gowfs.FsShell) {
 	}
 
 	workingLocalDir = p
+	return
 }
 
 func cmdLcdFuncWithout(wshell *gowfs.FsShell) {
@@ -88,4 +89,5 @@ func cmdLcdFuncWithout(wshell *gowfs.FsShell) {
 		return
 	}
 	workingLocalDir = u.HomeDir
+	return
 }

@@ -87,10 +87,10 @@ func cmdCdFuncWithout(wshell *gowfs.FsShell) {
 }
 
 func updatePromt(wshell *gowfs.FsShell, c *cli.Cli) {
-	paint := colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[%s@%s]", workingLocalDir, localUser, wshell.WorkingPath, wshell.FileSystem.Config.User))  + " > "
+	paint := colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[%s@%s]", localUser, workingLocalDir, wshell.FileSystem.Config.User, wshell.WorkingPath))  + " > "
 	
 	if wshell.FileSystem == nil {
-		paint = colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[-@-]", workingLocalDir, localUser)) + " > "
+		paint = colorstring.Color(fmt.Sprintf("[blue]L[%s@%s]:R[-@-]", localUser, workingLocalDir)) + " > "
 	}
 
 	c.Scanner.Config.Prompt = paint
