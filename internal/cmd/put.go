@@ -77,6 +77,7 @@ func cmdPutFunc(ps []string, wshell *gowfs.FsShell) {
 	}
 
 	for i, p := range existsLocalPathes {
+		fmt.Println("SOURCE - ", p)
 		_, err := wshell.Put(p, remotePath, overwrite)
 		if err != nil {
 			fmt.Print(err)
