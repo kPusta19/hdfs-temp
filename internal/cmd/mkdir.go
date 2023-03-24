@@ -31,6 +31,7 @@ func cmdMkdir(wshell *gowfs.FsShell, c *cli.Cli) *command.Command {
 				if cmd := getCmdByName(c, helpName); cmd != nil {
 					cmd.Func(args)
 				}
+				return
 			}
 			cmdMkdirFunc(args, wshell, c)
 		},
