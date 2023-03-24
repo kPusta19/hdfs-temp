@@ -51,7 +51,7 @@ func cmdGetFunc(ps []string, wshell *gowfs.FsShell) {
 	if lHas {
 		lFile, err := os.Stat(localPathLocal)
 		if err != nil {
-			fmt.Print(err)
+			fmt.Print("stat" + err.Error())
 			return
 		}
 		if lFile.IsDir() {
